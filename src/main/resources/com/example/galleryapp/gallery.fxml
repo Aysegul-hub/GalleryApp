@@ -1,14 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="$CONTROLLER_NAME$"
-            prefHeight="400.0" prefWidth="600.0" >
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.galleryapp.GalleryController"
+      alignment="CENTER"
+      spacing="20">
 
-</AnchorPane>
+    <Label text="Gallery"
+           style="-fx-font-size: 32px; -fx-font-weight:bold;"/>
+
+    <GridPane hgap="15"
+              vgap="15"
+              alignment="CENTER">
+
+        <ImageView
+                fx:id="photo1"
+                fitWidth="250.0"
+                fitHeight="180.0"
+                preserveRatio="true"
+                GridPane.columnIndex="0"
+                GridPane.rowIndex="0"/>
+
+        <ImageView
+                fx:id="photo2"
+                fitWidth="250.0"
+                fitHeight="180.0"
+                preserveRatio="true"
+                GridPane.columnIndex="1"
+                GridPane.rowIndex="0"/>
+
+        <Label text="Photo 3"
+               style ="-fx-border-color:gray; -fx-padding:50px;"
+               GridPane.columnIndex="0"
+               GridPane.rowIndex="1"/>
+
+        <Label text="Photo 4"
+               style ="-fx-border-color:gray; -fx-padding:50px;"
+               GridPane.rowIndex="1"
+               GridPane.columnIndex="1"/>
+
+
+    </GridPane>
+
+
+</VBox>
