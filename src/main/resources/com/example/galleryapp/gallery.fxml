@@ -1,52 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.galleryapp.GalleryController"
       alignment="CENTER"
-      spacing="20">
+      spacing="20"
+      style="-fx-padding: 30;
+             -fx-background-color: #242424;">
+
+    <!-- BAŞLIK -->
 
     <Label text="Gallery"
-           style="-fx-font-size: 32px; -fx-font-weight:bold;"/>
+           style="-fx-font-size: 32px;
+                  -fx-font-weight: bold;
+                  -fx-text-fill: white;"/>
 
-    <GridPane hgap="15"
-              vgap="15"
-              alignment="CENTER">
+    <Label fx:id ="emptyLabel"
+           text="Galeriniz boş. Media klasörüne fotoğraf veya video ekleyiniz."
+           style="-fx-font-size: 16px ; -fx-text-fill:white;">
 
-        <ImageView
-                fx:id="photo1"
-                fitWidth="250.0"
-                fitHeight="180.0"
-                preserveRatio="true"
-                GridPane.columnIndex="0"
-                GridPane.rowIndex="0"/>
-
-        <ImageView
-                fx:id="photo2"
-                fitWidth="250.0"
-                fitHeight="180.0"
-                preserveRatio="true"
-                GridPane.columnIndex="1"
-                GridPane.rowIndex="0"/>
-
-        <Label text="Photo 3"
-               style ="-fx-border-color:gray; -fx-padding:50px;"
-               GridPane.columnIndex="0"
-               GridPane.rowIndex="1"/>
-
-        <Label text="Photo 4"
-               style ="-fx-border-color:gray; -fx-padding:50px;"
-               GridPane.rowIndex="1"
-               GridPane.columnIndex="1"/>
+    </Label>
 
 
-    </GridPane>
+    <!-- GALERİ -->
 
+    <ScrollPane fx:id="galleryScrollPane"
+                fitToWidth="true"
+                fitToHeight="true"
+                prefWidth="1000"
+                prefHeight="700"
+                style="-fx-background-color: #242424;
+                       -fx-background: #242424;">
+
+        <content>
+
+            <TilePane fx:id="galleryPane"
+                      hgap="15"
+                      vgap="15"
+                      alignment="CENTER"
+                      style="-fx-padding: 20;
+                             -fx-background-color: #242424;"/>
+
+        </content>
+
+    </ScrollPane>
 
 </VBox>

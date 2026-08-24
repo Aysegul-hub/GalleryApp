@@ -1,0 +1,18 @@
+.root {
+    -fx-background-color: #202020;
+}
+.photo-tile {
+    -fx-background-color: #252525;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+}
+.photo-tile {
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 12, 0, 0, 4);
+}
+
+.photo-tile:hover {
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
