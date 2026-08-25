@@ -1,53 +1,138 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.galleryapp.GalleryController"
-      alignment="CENTER"
-      spacing="20"
-      style="-fx-padding: 30;
-             -fx-background-color: #242424;">
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.galleryapp.GalleryController"
+            prefWidth="1000.0"
+            prefHeight="700.0"
+            style="-fx-background-color: #242424;">
 
-    <!-- BAŞLIK -->
+    <children>
 
-    <Label text="Gallery"
-           style="-fx-font-size: 32px;
-                  -fx-font-weight: bold;
-                  -fx-text-fill: white;"/>
+        <VBox spacing="15"
+              AnchorPane.topAnchor="20"
+              AnchorPane.leftAnchor="25"
+              AnchorPane.rightAnchor="25"
+              AnchorPane.bottomAnchor="20">
 
-    <Label fx:id ="emptyLabel"
-           text="Galeriniz boş. Media klasörüne fotoğraf veya video ekleyiniz."
-           style="-fx-font-size: 16px ; -fx-text-fill:white;">
+            <!-- ========================================= -->
+            <!-- ÜST KISIM -->
+            <!-- ========================================= -->
 
-    </Label>
+            <VBox spacing="5">
+
+                <Label text="Gallery"
+                       style="-fx-font-size: 28px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: white;"/>
+
+                <Label fx:id="itemCountLabel"
+                       text="0 öğe"
+                       style="-fx-text-fill: #888888;
+                              -fx-font-size: 14px;"/>
+
+            </VBox>
 
 
-    <!-- GALERİ -->
+            <!-- ========================================= -->
+            <!-- BUTONLAR -->
+            <!-- ========================================= -->
 
-    <ScrollPane fx:id="galleryScrollPane"
-                fitToWidth="true"
-                fitToHeight="true"
-                prefWidth="1000"
-                prefHeight="700"
-                style="-fx-background-color: #242424;
-                       -fx-background: #242424;">
+            <HBox spacing="10">
 
-        <content>
+                <!-- GERİ -->
 
-            <TilePane fx:id="galleryPane"
-                      hgap="15"
-                      vgap="15"
-                      alignment="CENTER"
-                      style="-fx-padding: 20;
-                             -fx-background-color: #242424;"/>
+                <Button text="← Geri"
+                        onAction="#goBack"
+                        prefHeight="35"
+                        style="-fx-background-color: #3A3A3A;
+                               -fx-text-fill: white;
+                               -fx-font-size: 14px;
+                               -fx-background-radius: 10px;
+                               -fx-padding: 8px 18px;"/>
 
-        </content>
 
-    </ScrollPane>
+                <!-- SEÇ -->
 
-</VBox>
+                <Button fx:id="selectButton"
+                        text="Seç"
+                        onAction="#toggleSelectionMode"
+                        prefHeight="35"
+                        style="-fx-background-color: #3A3A3A;
+                               -fx-text-fill: white;
+                               -fx-font-size: 14px;
+                               -fx-background-radius: 10px;
+                               -fx-padding: 8px 18px;"/>
+
+
+                <!-- SİL -->
+
+                <Button fx:id="deleteButton"
+                        text="Sil"
+                        onAction="#deleteSelected"
+                        visible="false"
+                        managed="false"
+                        prefHeight="35"
+                        style="-fx-background-color: #8B3030;
+                               -fx-text-fill: white;
+                               -fx-font-size: 14px;
+                               -fx-background-radius: 10px;
+                               -fx-padding: 8px 18px;"/>
+
+
+                <!-- ALBÜME EKLE -->
+
+                <Button fx:id="addToAlbumButton"
+                        text="Albüme Ekle"
+                        onAction="#addSelectedToAlbum"
+                        visible="false"
+                        managed="false"
+                        prefHeight="35"
+                        style="-fx-background-color: #3A3A3A;
+                               -fx-text-fill: white;
+                               -fx-font-size: 14px;
+                               -fx-background-radius: 10px;
+                               -fx-padding: 8px 18px;"/>
+
+            </HBox>
+
+
+            <!-- ========================================= -->
+            <!-- GALERİ -->
+            <!-- ========================================= -->
+
+            <ScrollPane fx:id="galleryScrollPane"
+                        fitToWidth="true"
+                        fitToHeight="true"
+                        VBox.vgrow="ALWAYS"
+                        style="-fx-background-color: #242424;
+                               -fx-background: #242424;
+                               -fx-border-color: transparent;">
+
+                <content>
+
+                    <TilePane fx:id="galleryPane"
+                              hgap="15"
+                              vgap="15"
+                              alignment="TOP_LEFT"
+                              prefColumns="4"
+                              style="-fx-padding: 20px;
+                                     -fx-background-color: #242424;"/>
+
+                </content>
+
+            </ScrollPane>
+
+        </VBox>
+
+    </children>
+
+</AnchorPane>

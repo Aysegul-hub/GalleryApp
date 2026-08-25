@@ -5,9 +5,16 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="965.0" prefWidth="1183.0" spacing="20" stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.galleryapp.MainController">
+<VBox alignment="CENTER"
+      prefHeight="965.0"
+      prefWidth="1183.0"
+      spacing="20"
+      stylesheets="@../../../css/style.css"
+      xmlns="http://javafx.com/javafx/26"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.galleryapp.MainController">
 
-    <Label prefHeight="47.0" prefWidth="181.0" style="-fx-font-size: 32px;                   -fx-font-weight: bold;" text="Gallery App" textFill="WHITE">
+    <Label prefHeight="47.0" prefWidth="181.0" style="-fx-font-size: 32px;  -fx-font-weight: bold;" text="Gallery App" textFill="WHITE">
       <font>
          <Font size="36.0" />
       </font></Label>
@@ -17,7 +24,10 @@
          <Font name="System Bold" size="17.0" />
       </font></Button>
 
-    <Button stylesheets="@../../../css/style.css" text="Albums">
+    <Button onAction="#openAlbums"
+            stylesheets="@../../../css/style.css"
+            text="Albums">
+
       <font>
          <Font name="System Bold" size="17.0" />
       </font></Button>

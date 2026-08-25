@@ -1,10 +1,16 @@
 package com.example.galleryapp;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
@@ -21,32 +27,52 @@ import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 
 public class GalleryController {
+
+    // =========================================================
+    // FXML
+    // =========================================================
 
     @FXML
     private TilePane galleryPane;
 
     @FXML
-    private Label emptyLabel;
-
+    private ScrollPane galleryScrollPane;
 
     @FXML
-    private ScrollPane galleryScrollPane;
+    private Label itemCountLabel;
+
+    @FXML
+    private Button selectButton;
+
+    @FXML
+    private Button deleteButton;
+
+    @FXML
+    private Button addToAlbumButton;
+
+
+    // =========================================================
+    // SEÇİM SİSTEMİ
+    // =========================================================
+
+    private boolean selectionMode = false;
+
+    private final List<Path> selectedFiles =
+            new ArrayList<>();
 
 
     // =========================================================
@@ -60,17 +86,25 @@ public class GalleryController {
 
 
     // =========================================================
-    // TARİH FORMATI
+    // ALBÜMLER KLASÖRÜ
     // =========================================================
 
-    private final DateTimeFormatter dateFormatter =
-            DateTimeFormatter.ofPattern(
-                    "dd MMMM yyyy"
+    private final Path albumsFolder =
+            Path.of(
+                    "C://Users//ayseg//Desktop//GalleryAppMedia//albums"
             );
 
 
     // =========================================================
-    // GALERİ AÇILDIĞINDA
+    // TARİH FORMATI
+    // =========================================================
+
+    private final DateTimeFormatter dateFormatter =
+            DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+
+    // =========================================================
+    // SAYFA AÇILDIĞINDA
     // =========================================================
 
     @FXML
@@ -79,13 +113,28 @@ public class GalleryController {
         try {
 
             Files.createDirectories(mediaFolder);
+            Files.createDirectories(albumsFolder);
 
-            System.out.println("================================");
-            System.out.println("GALERİNİN BAKTIĞI KLASÖR:");
-            System.out.println(mediaFolder.toAbsolutePath());
-            System.out.println("================================");
+            // Başlangıçta seçim butonlarını gizle
+
+            deleteButton.setVisible(false);
+            deleteButton.setManaged(false);
+
+            addToAlbumButton.setVisible(false);
+            addToAlbumButton.setManaged(false);
 
             loadGallery();
+
+            // Pencere genişliğine göre sütun sayısı
+
+            if (galleryScrollPane != null) {
+
+                galleryScrollPane.widthProperty()
+                        .addListener(
+                                (obs, oldValue, newValue) ->
+                                        updateColumns(newValue.doubleValue())
+                        );
+            }
 
         } catch (IOException e) {
 
@@ -95,13 +144,10 @@ public class GalleryController {
 
 
     // =========================================================
-    // SÜTUN SAYISINI EKRANA GÖRE AYARLA
+    // SÜTUN SAYISI
     // =========================================================
 
     private void updateColumns(double width) {
-
-        // Bir kart yaklaşık 230 px
-        // Aralarında 15 px boşluk var
 
         int columns =
                 Math.max(
@@ -109,10 +155,78 @@ public class GalleryController {
                         (int) ((width - 20) / 245)
                 );
 
-        galleryPane.setPrefColumns(
-                columns
-        );
+        galleryPane.setPrefColumns(columns);
     }
+
+
+    // =========================================================
+    // SEÇ BUTONU
+    // =========================================================
+
+    @FXML
+    private void toggleSelectionMode() {
+
+        selectionMode = !selectionMode;
+
+        selectedFiles.clear();
+
+        if (selectionMode) {
+
+            selectButton.setText("Seçimi Bitir");
+
+            deleteButton.setVisible(true);
+            deleteButton.setManaged(true);
+
+            addToAlbumButton.setVisible(true);
+            addToAlbumButton.setManaged(true);
+
+        } else {
+
+            selectButton.setText("Seç");
+
+            deleteButton.setVisible(false);
+            deleteButton.setManaged(false);
+
+            addToAlbumButton.setVisible(false);
+            addToAlbumButton.setManaged(false);
+        }
+
+        updateSelectionButtons();
+
+        loadGallery();
+    }
+
+
+    // =========================================================
+    // GERİ
+    // =========================================================
+
+    @FXML
+    private void goBack(ActionEvent event) throws IOException {
+
+        FXMLLoader loader =
+                new FXMLLoader(
+                        getClass().getResource(
+                                "/com/example/galleryapp/main.fxml"
+                        )
+                );
+
+        Scene scene =
+                new Scene(loader.load());
+
+        Stage stage =
+                (Stage)
+                        ((Node) event.getSource())
+                                .getScene()
+                                .getWindow();
+
+        stage.setScene(scene);
+    }
+
+
+    // =========================================================
+    // GALERİYİ YÜKLE
+    // =========================================================
 
     private void loadGallery() {
 
@@ -122,53 +236,104 @@ public class GalleryController {
 
             List<Path> files;
 
-            try (var stream = Files.list(mediaFolder)) {
+            try (var stream =
+                         Files.list(mediaFolder)) {
 
-                files = stream
-                        .filter(Files::isRegularFile)
+                files =
+                        stream
 
-                        // FOTOĞRAF VE VİDEOLARI AL
-                        .filter(path -> {
-                            String name = path
-                                    .getFileName()
-                                    .toString()
-                                    .toLowerCase();
+                                .filter(Files::isRegularFile)
 
-                            return isImage(name) || isVideo(name);
-                        })
+                                .filter(path -> {
 
-                        // YENİLER ÜSTTE
-                        .sorted((a, b) -> {
-                            try {
-                                return Files.getLastModifiedTime(b)
-                                        .compareTo(
-                                                Files.getLastModifiedTime(a)
-                                        );
+                                    String name =
+                                            path.getFileName()
+                                                    .toString()
+                                                    .toLowerCase();
 
-                            } catch (IOException e) {
-                                return 0;
-                            }
-                        })
+                                    return isImage(name)
+                                            || isVideo(name);
+                                })
 
-                        .toList();
+                                // YENİLER ÜSTTE
+
+                                .sorted(
+                                        (a, b) -> {
+
+                                            try {
+
+                                                return Files
+                                                        .getLastModifiedTime(b)
+                                                        .compareTo(
+                                                                Files.getLastModifiedTime(a)
+                                                        );
+
+                                            } catch (IOException e) {
+
+                                                return 0;
+                                            }
+                                        }
+                                )
+
+                                .toList();
             }
 
-            // Önce eski kartları temizle
+
+            // Eski kartları temizle
+
             galleryPane.getChildren().clear();
 
-            // Galeri boş mu?
-            boolean empty = files.isEmpty();
 
-            emptyLabel.setVisible(empty);
-            emptyLabel.setManaged(empty);
+            // =================================================
+            // SAYILAR
+            // =================================================
 
-            // Dosyaları ekle
+            long imageCount =
+                    files.stream()
+                            .filter(
+                                    file ->
+                                            isImage(
+                                                    file.getFileName()
+                                                            .toString()
+                                                            .toLowerCase()
+                                            )
+                            )
+                            .count();
+
+
+            long videoCount =
+                    files.stream()
+                            .filter(
+                                    file ->
+                                            isVideo(
+                                                    file.getFileName()
+                                                            .toString()
+                                                            .toLowerCase()
+                                            )
+                            )
+                            .count();
+
+
+            itemCountLabel.setText(
+                    imageCount +
+                            " fotoğraf • " +
+                            videoCount +
+                            " video • " +
+                            files.size() +
+                            " toplam öğe"
+            );
+
+
+            // =================================================
+            // DOSYALARI OLUŞTUR
+            // =================================================
+
             for (Path file : files) {
 
-                String name = file
-                        .getFileName()
-                        .toString()
-                        .toLowerCase();
+                String name =
+                        file.getFileName()
+                                .toString()
+                                .toLowerCase();
 
                 if (isImage(name)) {
 
@@ -180,22 +345,12 @@ public class GalleryController {
                 }
             }
 
-            System.out.println("Galeride bulunan dosya sayısı: " + files.size());
-
-            for (Path file : files) {
-                System.out.println(file);
-            }
 
         } catch (IOException e) {
 
             e.printStackTrace();
         }
     }
-
-    // =========================================================
-    // GALERİYİ YÜKLE
-    // =========================================================
-
 
 
     // =========================================================
@@ -206,7 +361,6 @@ public class GalleryController {
 
         try {
 
-            // Fotoğraf
             Image image =
                     new Image(
                             file.toUri().toString(),
@@ -222,26 +376,22 @@ public class GalleryController {
 
             imageView.setFitWidth(220);
             imageView.setFitHeight(160);
-
             imageView.setPreserveRatio(true);
             imageView.setSmooth(true);
 
 
-            // Fotoğrafın kutusu
             StackPane imageBox =
                     createBaseTile();
 
-            imageBox
-                    .getChildren()
+
+            imageBox.getChildren()
                     .add(imageView);
 
 
-            // Tarih
             Label dateLabel =
                     createDateLabel(file);
 
 
-            // Fotoğraf + tarih
             VBox card =
                     new VBox(
                             8,
@@ -249,27 +399,35 @@ public class GalleryController {
                             dateLabel
                     );
 
-            card.setAlignment(
-                    Pos.CENTER
-            );
+            card.setAlignment(Pos.CENTER);
 
 
-            // Tıklayınca fotoğrafı aç
             imageBox.setOnMouseClicked(
-                    event ->
-                            openImage(file)
+                    event -> {
+
+                        if (selectionMode) {
+
+                            toggleFileSelection(
+                                    file,
+                                    imageBox
+                            );
+
+                        } else {
+
+                            openImage(file);
+                        }
+                    }
             );
 
 
-            galleryPane
-                    .getChildren()
+            galleryPane.getChildren()
                     .add(card);
+
 
         } catch (Exception e) {
 
             e.printStackTrace();
         }
-
     }
 
 
@@ -281,30 +439,36 @@ public class GalleryController {
 
         try {
 
-            Media media = new Media(file.toUri().toString());
+            Media media =
+                    new Media(
+                            file.toUri().toString()
+                    );
 
-            MediaPlayer mediaPlayer = new MediaPlayer(media);
+            MediaPlayer mediaPlayer =
+                    new MediaPlayer(media);
 
-            MediaView mediaView = new MediaView(mediaPlayer);
+            MediaView mediaView =
+                    new MediaView(mediaPlayer);
+
 
             mediaView.setFitWidth(220);
             mediaView.setFitHeight(160);
             mediaView.setPreserveRatio(true);
 
-            // Videoyu otomatik oynatma
+
             mediaPlayer.setMute(true);
 
-            StackPane videoBox = new StackPane();
 
-            videoBox.setPrefSize(220, 160);
-            videoBox.setMinSize(220, 160);
-            videoBox.setMaxSize(220, 160);
+            StackPane videoBox =
+                    createBaseTile();
 
-            // Video görüntüsü
-            videoBox.getChildren().add(mediaView);
 
-            // ▶ işareti
-            Label playIcon = new Label("▶");
+            videoBox.getChildren()
+                    .add(mediaView);
+
+
+            Label playIcon =
+                    new Label("▶");
 
             playIcon.setStyle(
                     "-fx-font-size: 35px;" +
@@ -314,36 +478,62 @@ public class GalleryController {
                             "-fx-padding: 8px 12px 8px 12px;"
             );
 
-            videoBox.getChildren().add(playIcon);
 
-            // Video hazır olduğunda ilk kareye git
-            mediaPlayer.setOnReady(() -> {
+            videoBox.getChildren()
+                    .add(playIcon);
 
-                mediaPlayer.seek(Duration.ZERO);
 
-            });
-
-            // Tarih
-            Label dateLabel = createDateLabel(file);
-
-            VBox card = new VBox(
-                    8,
-                    videoBox,
-                    dateLabel
+            StackPane.setAlignment(
+                    playIcon,
+                    Pos.CENTER
             );
+
+
+            mediaPlayer.setOnReady(
+                    () -> {
+
+                        mediaPlayer.seek(
+                                Duration.ZERO
+                        );
+                    }
+            );
+
+
+            Label dateLabel =
+                    createDateLabel(file);
+
+
+            VBox card =
+                    new VBox(
+                            8,
+                            videoBox,
+                            dateLabel
+                    );
 
             card.setAlignment(Pos.CENTER);
 
-            // TIKLANINCA VİDEOYU AÇ
-            videoBox.setOnMouseClicked(event -> {
 
-                openVideo(file);
+            videoBox.setOnMouseClicked(
+                    event -> {
 
-            });
+                        if (selectionMode) {
 
-            galleryPane
-                    .getChildren()
+                            toggleFileSelection(
+                                    file,
+                                    videoBox
+                            );
+
+                        } else {
+
+                            openVideo(file);
+                        }
+                    }
+            );
+
+
+            galleryPane.getChildren()
                     .add(card);
+
 
         } catch (Exception e) {
 
@@ -353,129 +543,270 @@ public class GalleryController {
 
 
     // =========================================================
-    // VİDEO KAPAĞI
+    // DOSYA SEÇME
     // =========================================================
 
-    private void createVideoThumbnail(
+    private void toggleFileSelection(
             Path file,
-            StackPane tile,
-            Label playIcon) {
+            StackPane box) {
+
+        if (selectedFiles.contains(file)) {
+
+            selectedFiles.remove(file);
+
+            box.setStyle(
+                    "-fx-background-color: #303030;" +
+                            "-fx-background-radius: 12;" +
+                            "-fx-border-radius: 12;" +
+                            "-fx-border-color: #555555;" +
+                            "-fx-border-width: 1;"
+            );
+
+        } else {
+
+            selectedFiles.add(file);
+
+            box.setStyle(
+                    "-fx-background-color: #303030;" +
+                            "-fx-background-radius: 12;" +
+                            "-fx-border-radius: 12;" +
+                            "-fx-border-color: #4A90E2;" +
+                            "-fx-border-width: 4;"
+            );
+        }
+
+
+        updateSelectionButtons();
+    }
+
+
+    // =========================================================
+    // SEÇİM BUTONLARINI GÜNCELLE
+    // =========================================================
+
+    private void updateSelectionButtons() {
+
+        boolean hasSelection =
+                !selectedFiles.isEmpty();
+
+
+        deleteButton.setDisable(
+                !hasSelection
+        );
+
+        addToAlbumButton.setDisable(
+                !hasSelection
+        );
+    }
+
+
+    // =========================================================
+    // SEÇİLENLERİ ALBÜME EKLE
+    // =========================================================
+
+    @FXML
+    private void addSelectedToAlbum() {
+
+        if (selectedFiles.isEmpty()) {
+
+            showMessage(
+                    "Önce fotoğraf veya video seçin."
+            );
+
+            return;
+        }
+
 
         try {
 
-            Media media =
-                    new Media(
-                            file.toUri().toString()
+            Files.createDirectories(
+                    albumsFolder
+            );
+
+
+            List<String> albumNames;
+
+            try (var stream =
+                         Files.list(albumsFolder)) {
+
+                albumNames =
+                        stream
+                                .filter(
+                                        Files::isDirectory
+                                )
+                                .map(
+                                        path ->
+                                                path.getFileName()
+                                                        .toString()
+                                )
+                                .toList();
+            }
+
+
+            if (albumNames.isEmpty()) {
+
+                showMessage(
+                        "Önce bir albüm oluşturmalısınız."
+                );
+
+                return;
+            }
+
+
+            ChoiceDialog<String> dialog =
+                    new ChoiceDialog<>(
+                            albumNames.get(0),
+                            albumNames
                     );
 
 
-            MediaPlayer player =
-                    new MediaPlayer(media);
+            dialog.setTitle(
+                    "Albüm Seç"
+            );
 
-            player.setMute(true);
+            dialog.setHeaderText(
+                    "Seçilen öğeler hangi albüme eklensin?"
+            );
 
-
-            MediaView mediaView =
-                    new MediaView(player);
-
-
-            mediaView.setFitWidth(220);
-            mediaView.setFitHeight(160);
-            mediaView.setPreserveRatio(true);
+            dialog.setContentText(
+                    "Albüm:"
+            );
 
 
-            player.setOnReady(() -> {
+            Optional<String> result =
+                    dialog.showAndWait();
 
-                player.seek(
-                        Duration.ZERO
+
+            if (result.isEmpty()) {
+
+                return;
+            }
+
+
+            String selectedAlbum =
+                    result.get();
+
+
+            Path albumPath =
+                    albumsFolder.resolve(
+                            selectedAlbum
+                    );
+
+
+            // =================================================
+            // KOPYALAMA
+            // =================================================
+            // Gallery'deki orijinal dosyaya DOKUNMUYORUZ.
+            // Sadece albüme kopyalıyoruz.
+
+            for (Path file : selectedFiles) {
+
+                Path destination =
+                        albumPath.resolve(
+                                file.getFileName()
+                        );
+
+
+                Files.copy(
+                        file,
+                        destination,
+                        StandardCopyOption.REPLACE_EXISTING
                 );
+            }
 
 
-                Platform.runLater(() -> {
-
-                    try {
-
-                        Image snapshot =
-                                mediaView.snapshot(
-                                        null,
-                                        null
-                                );
+            showMessage(
+                    selectedFiles.size() +
+                            " öğe \"" +
+                            selectedAlbum +
+                            "\" albümüne eklendi."
+            );
 
 
-                        if (snapshot != null) {
+            selectedFiles.clear();
 
-                            ImageView thumbnail =
-                                    new ImageView(
-                                            snapshot
-                                    );
+            updateSelectionButtons();
 
-                            thumbnail.setFitWidth(
-                                    220
-                            );
-
-                            thumbnail.setFitHeight(
-                                    160
-                            );
-
-                            thumbnail.setPreserveRatio(
-                                    true
-                            );
-
-                            thumbnail.setSmooth(
-                                    true
-                            );
+            loadGallery();
 
 
-                            tile.getChildren()
-                                    .remove(playIcon);
-
-
-                            tile.getChildren()
-                                    .add(
-                                            thumbnail
-                                    );
-
-
-                            tile.getChildren()
-                                    .add(
-                                            playIcon
-                                    );
-
-
-                            StackPane.setAlignment(
-                                    playIcon,
-                                    Pos.CENTER
-                            );
-                        }
-
-
-                        player.dispose();
-
-                    } catch (Exception e) {
-
-                        player.dispose();
-
-                        e.printStackTrace();
-                    }
-                });
-            });
-
-
-            player.setOnError(() -> {
-
-                System.out.println(
-                        "Video thumbnail oluşturulamadı: "
-                                + file
-                );
-
-                player.dispose();
-            });
-
-
-        } catch (Exception e) {
+        } catch (IOException e) {
 
             e.printStackTrace();
+
+            showMessage(
+                    "Öğeler albüme eklenirken hata oluştu."
+            );
         }
+    }
+
+
+    // =========================================================
+    // SEÇİLENLERİ SİL
+    // =========================================================
+
+    @FXML
+    private void deleteSelected() {
+
+        if (selectedFiles.isEmpty()) {
+
+            showMessage(
+                    "Önce fotoğraf veya video seçin."
+            );
+
+            return;
+        }
+
+
+        Alert alert =
+                new Alert(
+                        Alert.AlertType.CONFIRMATION
+                );
+
+
+        alert.setTitle(
+                "Dosyaları Sil"
+        );
+
+        alert.setHeaderText(
+                null
+        );
+
+        alert.setContentText(
+                selectedFiles.size() +
+                        " öğeyi silmek istediğinize emin misiniz?"
+        );
+
+
+        Optional<ButtonType> result =
+                alert.showAndWait();
+
+
+        if (result.isEmpty()
+                || result.get() != ButtonType.OK) {
+
+            return;
+        }
+
+
+        for (Path file : selectedFiles) {
+
+            try {
+
+                Files.deleteIfExists(file);
+
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        }
+
+
+        selectedFiles.clear();
+
+        updateSelectionButtons();
+
+        loadGallery();
     }
 
 
@@ -487,6 +818,7 @@ public class GalleryController {
 
         StackPane tile =
                 new StackPane();
+
 
         tile.setPrefSize(
                 230,
@@ -503,9 +835,11 @@ public class GalleryController {
                 170
         );
 
+
         tile.setAlignment(
                 Pos.CENTER
         );
+
 
         tile.setStyle(
                 "-fx-background-color: #303030;" +
@@ -521,40 +855,49 @@ public class GalleryController {
 
 
     // =========================================================
-    // TARİH LABEL'I
+    // TARİH
     // =========================================================
 
-
-
-    // =========================================================
-    // DOSYANIN TARİHİNİ AL
-    // =========================================================
-
-    private LocalDateTime getFileDate(
+    private Label createDateLabel(
             Path file) {
+
+        Label dateLabel =
+                new Label();
+
 
         try {
 
-            FileTime fileTime =
-                    Files.getLastModifiedTime(
-                            file
+            LocalDateTime date =
+                    LocalDateTime.ofInstant(
+                            Files.getLastModifiedTime(file)
+                                    .toInstant(),
+                            ZoneId.systemDefault()
                     );
 
 
-            return LocalDateTime.ofInstant(
-                    fileTime.toInstant(),
-                    ZoneId.systemDefault()
+            dateLabel.setText(
+                    dateFormatter.format(date)
             );
+
 
         } catch (IOException e) {
 
-            return LocalDateTime.MIN;
+            dateLabel.setText("");
         }
+
+
+        dateLabel.setStyle(
+                "-fx-text-fill: #aaaaaa;" +
+                        "-fx-font-size: 13px;"
+        );
+
+
+        return dateLabel;
     }
 
 
     // =========================================================
-    // BÜYÜK FOTOĞRAF
+    // FOTOĞRAFI AÇ
     // =========================================================
 
     private void openImage(Path file) {
@@ -568,27 +911,21 @@ public class GalleryController {
         ImageView imageView =
                 new ImageView(image);
 
-        imageView.setPreserveRatio(
-                true
-        );
 
-        imageView.setFitWidth(
-                1100
-        );
+        imageView.setPreserveRatio(true);
 
-        imageView.setFitHeight(
-                750
-        );
+        imageView.setFitWidth(1100);
 
-        imageView.setSmooth(
-                true
-        );
+        imageView.setFitHeight(750);
+
+        imageView.setSmooth(true);
 
 
         StackPane root =
                 new StackPane(
                         imageView
                 );
+
 
         root.setStyle(
                 "-fx-background-color: #242424;"
@@ -606,10 +943,12 @@ public class GalleryController {
         Stage stage =
                 new Stage();
 
+
         stage.setTitle(
                 file.getFileName()
                         .toString()
         );
+
 
         stage.setScene(scene);
 
@@ -618,7 +957,7 @@ public class GalleryController {
 
 
     // =========================================================
-    // VİDEO OYNATICI
+    // VİDEOYU AÇ
     // =========================================================
 
     private void openVideo(Path file) {
@@ -641,25 +980,20 @@ public class GalleryController {
                     );
 
 
-            mediaView.setPreserveRatio(
-                    true
-            );
+            mediaView.setPreserveRatio(true);
 
-            mediaView.setFitWidth(
-                    1100
-            );
+            mediaView.setFitWidth(1100);
 
-            mediaView.setFitHeight(
-                    650
-            );
+            mediaView.setFitHeight(650);
 
 
-            // -------------------------------------------------
+            // =================================================
             // PLAY / PAUSE
-            // -------------------------------------------------
+            // =================================================
 
             Button playButton =
                     new Button("▶");
+
 
             playButton.setStyle(
                     "-fx-font-size: 18px;"
@@ -686,12 +1020,13 @@ public class GalleryController {
             );
 
 
-            // -------------------------------------------------
+            // =================================================
             // BAŞA SAR
-            // -------------------------------------------------
+            // =================================================
 
             Button restartButton =
                     new Button("↻");
+
 
             restartButton.setStyle(
                     "-fx-font-size: 18px;"
@@ -712,16 +1047,17 @@ public class GalleryController {
             );
 
 
-            // -------------------------------------------------
+            // =================================================
             // SES
-            // -------------------------------------------------
+            // =================================================
 
-            Label lowVolume =
-                    new Label("🔈");
-
-            Label highVolume =
+            Label volumeLabel =
                     new Label("🔊");
 
+            volumeLabel.setStyle(
+                    "-fx-text-fill: white;" +
+                            "-fx-font-size: 16px;"
+            );
 
             Slider volumeSlider =
                     new Slider(
@@ -730,6 +1066,7 @@ public class GalleryController {
                             0.5
                     );
 
+
             volumeSlider.setPrefWidth(
                     130
             );
@@ -737,31 +1074,32 @@ public class GalleryController {
 
             mediaPlayer.volumeProperty()
                     .bind(
-                            volumeSlider
-                                    .valueProperty()
+                            volumeSlider.valueProperty()
                     );
 
 
-            // -------------------------------------------------
+            // =================================================
             // İLERLEME
-            // -------------------------------------------------
+            // =================================================
 
             Slider progressSlider =
                     new Slider();
+
 
             progressSlider.setPrefWidth(
                     600
             );
 
 
-            // -------------------------------------------------
-            // SÜRE LABEL
-            // -------------------------------------------------
+            // =================================================
+            // SÜRE
+            // =================================================
 
             Label timeLabel =
                     new Label(
                             "00:00 / 00:00"
                     );
+
 
             timeLabel.setStyle(
                     "-fx-text-fill: white;" +
@@ -769,8 +1107,6 @@ public class GalleryController {
             );
 
 
-            // Video zamanı değişince
-            // slider ve süreyi güncelle
             mediaPlayer.currentTimeProperty()
                     .addListener(
                             (obs, oldTime, newTime) -> {
@@ -800,13 +1136,10 @@ public class GalleryController {
 
 
                                     timeLabel.setText(
-                                            formatDuration(
-                                                    newTime
-                                            )
+                                            formatDuration(newTime)
                                                     + " / "
                                                     + formatDuration(
-                                                    mediaPlayer
-                                                            .getTotalDuration()
+                                                    total
                                             )
                                     );
                                 }
@@ -814,7 +1147,6 @@ public class GalleryController {
                     );
 
 
-            // Slider'a tıklanınca videoda o noktaya git
             progressSlider.setOnMouseReleased(
                     event -> {
 
@@ -843,9 +1175,9 @@ public class GalleryController {
             );
 
 
-            // -------------------------------------------------
+            // =================================================
             // KONTROLLER
-            // -------------------------------------------------
+            // =================================================
 
             HBox controls =
                     new HBox(
@@ -854,9 +1186,9 @@ public class GalleryController {
                             playButton,
                             progressSlider,
                             timeLabel,
-                            lowVolume,
-                            volumeSlider,
-                            highVolume
+
+                            volumeSlider
+
                     );
 
 
@@ -871,9 +1203,9 @@ public class GalleryController {
             );
 
 
-            // -------------------------------------------------
+            // =================================================
             // ANA EKRAN
-            // -------------------------------------------------
+            // =================================================
 
             BorderPane root =
                     new BorderPane();
@@ -912,15 +1244,15 @@ public class GalleryController {
             );
 
 
-            stage.setScene(
-                    scene
-            );
-
+            stage.setScene(scene);
 
             stage.show();
 
 
-            // Video hazır olunca başlat
+            // =================================================
+            // VİDEO HAZIR
+            // =================================================
+
             mediaPlayer.setOnReady(
                     () -> {
 
@@ -939,7 +1271,10 @@ public class GalleryController {
             );
 
 
-            // Pencere kapanınca player'ı temizle
+            // =================================================
+            // PENCERE KAPANINCA
+            // =================================================
+
             stage.setOnCloseRequest(
                     event ->
                             mediaPlayer.dispose()
@@ -954,45 +1289,8 @@ public class GalleryController {
 
 
     // =========================================================
-    // SÜREYİ 00:00 ŞEKLİNE ÇEVİR
+    // SÜRE FORMATLA
     // =========================================================
-
-
-    private Label createDateLabel(Path file) {
-
-        Label dateLabel = new Label();
-
-        try {
-
-            LocalDateTime date =
-                    LocalDateTime.ofInstant(
-                            Files.getLastModifiedTime(file).toInstant(),
-                            ZoneId.systemDefault()
-                    );
-
-            DateTimeFormatter formatter =
-                    DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
-            dateLabel.setText(
-                    date.format(formatter)
-            );
-
-        } catch (IOException e) {
-
-            dateLabel.setText("");
-        }
-
-        dateLabel.setStyle(
-                "-fx-text-fill: #aaaaaa;" +
-                        "-fx-font-size: 13px;"
-        );
-
-        return dateLabel;
-    }
-
-    // Son değiştirme tarihini yazacak...
-
-
 
     private String formatDuration(
             Duration duration) {
@@ -1028,6 +1326,38 @@ public class GalleryController {
 
 
     // =========================================================
+    // MESAJ
+    // =========================================================
+
+    private void showMessage(
+            String message) {
+
+        Alert alert =
+                new Alert(
+                        Alert.AlertType.INFORMATION
+                );
+
+
+        alert.setTitle(
+                "Bilgi"
+        );
+
+
+        alert.setHeaderText(
+                null
+        );
+
+
+        alert.setContentText(
+                message
+        );
+
+
+        alert.showAndWait();
+    }
+
+
+    // =========================================================
     // FOTOĞRAF MI?
     // =========================================================
 
@@ -1055,7 +1385,5 @@ public class GalleryController {
                 || fileName.endsWith(".mov")
                 || fileName.endsWith(".mkv")
                 || fileName.endsWith(".webm");
-
-
     }
 }

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.galleryapp.AlbumMediaController"
+            prefWidth="1000.0"
+            prefHeight="700.0"
+            style="-fx-background-color: #292929;">
+
+    <children>
+
+        <VBox spacing="15"
+              AnchorPane.topAnchor="20"
+              AnchorPane.leftAnchor="25"
+              AnchorPane.rightAnchor="25"
+              AnchorPane.bottomAnchor="20">
+
+            <!-- ÜST BAŞLIK -->
+
+            <VBox spacing="5">
+
+                <Label fx:id="albumNameLabel"
+                       text="Albüm"
+                       style="-fx-font-size: 28px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: white;"/>
+
+                <Label fx:id="albumCountLabel"
+                       text="0 öğe"
+                       style="-fx-text-fill: #888888;
+                              -fx-font-size: 14px;"/>
+
+            </VBox>
+
+
+            <!-- BUTONLAR -->
+
+            <HBox spacing="10">
+
+                <Button text="← Geri"
+                        onAction="#goBack"
+                        prefHeight="35"
+                        style="-fx-background-color: #3A3A3A;
+                               -fx-text-fill: white;
+                               -fx-font-size: 14px;
+                               -fx-background-radius: 10px;
+                               -fx-padding: 8px 18px;"/>
+
+                <Button text="+ Ekle"
+                        onAction="#addMedia"
+                        prefHeight="35"
+                        style="-fx-background-color: #3A3A3A;
+                               -fx-text-fill: white;
+                               -fx-font-size: 14px;
+                               -fx-background-radius: 10px;
+                               -fx-padding: 8px 18px;"/>
+
+            </HBox>
+
+
+            <!-- ALBÜM İÇERİĞİ -->
+
+            <ScrollPane
+                    fx:id="albumScrollPane"
+                    fitToWidth="true"
+                    fitToHeight="true"
+                        VBox.vgrow="ALWAYS"
+                        style="-fx-background-color: #292929;
+                        -fx-control-inner-background: #292929;
+                        -fx-background: #292929;
+                        -fx-border-color: transparent;">
+
+                <content>
+
+                    <TilePane fx:id="mediaPane"
+                              hgap="20"
+                              vgap="25"
+                              prefColumns="4"
+                              style="-fx-background-color: #292929;
+                                     -fx-padding: 10 0 20 0;"/>
+
+                </content>
+
+            </ScrollPane>
+
+        </VBox>
+
+    </children>
+
+</AnchorPane>
