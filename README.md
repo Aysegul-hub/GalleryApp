@@ -8,6 +8,7 @@ JavaFX kullanılarak geliştirilmiş masaüstü galeri uygulaması.
 - 📁 Albüm oluşturma
 - 🎵 Albüm medya yönetimi
 - 🎨 JavaFX arayüzü
+- !!! Kurarken sorun yaşamanız durumunda "EK Bilgi" tag'ine tıklayıp "Yinede Çalıştır" diyebilirsiniz.
 
 ## 🚀 Uygulamayı İndir
 
