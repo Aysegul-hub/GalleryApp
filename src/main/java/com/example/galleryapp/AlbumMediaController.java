@@ -27,7 +27,6 @@ import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.geometry.Insets;
-import javafx.util.Duration;
 
 import java.io.IOException;
 import java.nio.file.Files;
