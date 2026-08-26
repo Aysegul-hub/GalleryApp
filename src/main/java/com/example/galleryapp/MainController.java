@@ -84,5 +84,46 @@ public class MainController {
         }
 
     }
+    
+    
+    @FXML
+    private void openMedia(ActionEvent event) throws IOException {
+
+        System.out.println("MEDIA BUTONUNA BASILDI...");
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/galleryapp/media.fxml"));
+
+
+        Scene scene = new Scene(loader.load());
+
+        changeScene(event, scene);
+
+    }
+        private void changeScene(ActionEvent event , Scene scene) {
+
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        
+        boolean maximized = stage.isMaximized();
+        double width = stage.getWidth();
+        double height = stage.getHeight();
+        double x = stage.getX();
+        double y = stage.getY();
+        
+        stage.setScene(scene);
+        
+        stage.setWidth(width);
+        stage.setHeight(height);
+        
+        stage.setX(x);
+        stage.setY(y);
+        
+        if (maximized) {
+            Platform.runLater(() ->  { stage.setMaximized(true); });
+            
+        }
+
+        
+    }
+    
 
 }

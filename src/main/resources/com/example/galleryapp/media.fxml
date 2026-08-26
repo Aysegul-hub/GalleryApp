@@ -1,15 +1,148 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
+<AnchorPane xmlns="http://javafx.com/javafx/26"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.galleryapp.MediaController"
+            prefWidth="1183.0"
+            prefHeight="965.0"
+            stylesheets="@../../../css/style.css">
 
-            prefHeight="400.0" prefWidth="600.0">
+
+    <!-- ========================= -->
+    <!-- BAŞLIK -->
+    <!-- ========================= -->
+
+    <Label text="Media"
+           layoutX="45.0"
+           layoutY="35.0"
+           textFill="WHITE"
+           style="-fx-font-size: 32px; -fx-font-weight: bold;">
+
+        <font>
+            <Font name="System Bold" size="32.0"/>
+        </font>
+
+    </Label>
+
+
+    <!-- ========================= -->
+    <!-- AÇIKLAMA -->
+    <!-- ========================= -->
+
+    <Label text="Fotoğraf ve videolarınızı yönetin."
+           layoutX="45.0"
+           layoutY="85.0"
+           textFill="#cccccc"
+           style="-fx-font-size: 15px;"/>
+
+
+    <!-- ========================= -->
+    <!-- GERİ BUTONU -->
+    <!-- ========================= -->
+
+    <Button text="← Geri"
+            layoutX="45.0"
+            layoutY="120.0"
+            prefWidth="90.0"
+            prefHeight="38.0"
+            onAction="#goBack"
+            style="
+                -fx-background-color: #555555;
+                -fx-text-fill: white;
+                -fx-background-radius: 8;
+                -fx-border-radius: 8;
+                -fx-font-size: 14px;
+                -fx-font-weight: bold;
+            "
+            />
+
+
+    <!-- ========================= -->
+    <!-- MEDYA EKLE BUTONU -->
+    <!-- ========================= -->
+
+    <Button text="+ Medya Ekle"
+            layoutX="150.0"
+            layoutY="120.0"
+            prefWidth="140.0"
+            prefHeight="38.0"
+            onAction="#addMedia"
+            style="
+                -fx-background-color: #555555;
+                -fx-text-fill: white;
+                -fx-background-radius: 8;
+                -fx-border-radius: 8;
+                -fx-font-size: 14px;
+                -fx-font-weight: bold;
+            "/>
+
+
+    <!-- ========================= -->
+    <!-- MEDYA SAYISI -->
+    <!-- ========================= -->
+
+    <Label fx:id="itemCountLabel"
+           text="0 medya"
+           textFill="#aaaaaa"
+           style="-fx-font-size: 14px;"
+           AnchorPane.rightAnchor="45.0"
+           layoutY="132.0"/>
+
+
+    <!-- ========================= -->
+    <!-- YATAY AYIRICI -->
+    <!-- ========================= -->
+
+    <Label text=""
+           layoutY="175.0"
+           prefHeight="0.5"
+           style="
+               -fx-background-color: #777777;
+               -fx-background-radius: 5;
+               -fx-border-radius: 5;
+           "
+           AnchorPane.leftAnchor="45.0"
+           AnchorPane.rightAnchor="45.0"/>
+
+
+    <!-- ========================= -->
+    <!-- MEDYA LİSTESİ -->
+    <!-- ========================= -->
+
+    <ScrollPane
+            layoutY="200.0"
+            fitToWidth="true"
+            fitToHeight="true"
+            AnchorPane.leftAnchor="45.0"
+            AnchorPane.rightAnchor="45.0"
+            AnchorPane.topAnchor="200.0"
+            AnchorPane.bottomAnchor="45.0"
+            style="
+                -fx-background-color: transparent;
+                -fx-background: transparent;
+            ">
+
+        <content>
+
+            <TilePane fx:id="mediaPane"
+                      prefColumns="4"
+                      hgap="20"
+                      vgap="25"
+                      style="
+                          -fx-padding: 10;
+                          -fx-background-color: transparent;
+                      "/>
+
+        </content>
+
+    </ScrollPane>
 
 
 </AnchorPane>

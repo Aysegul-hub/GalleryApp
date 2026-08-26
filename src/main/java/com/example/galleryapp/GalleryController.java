@@ -71,8 +71,11 @@ public class GalleryController {
 
     private boolean selectionMode = false;
 
-    private final List<Path> selectedFiles =
-            new ArrayList<>();
+    private final List<Path> selectedFiles = new ArrayList<>();
+
+    private final List<MediaPlayer> galleryVideoPlayers = new ArrayList<>();
+
+
 
 
     // =========================================================
@@ -233,6 +236,16 @@ public class GalleryController {
         try {
 
             Files.createDirectories(mediaFolder);
+            // Önceki video önizleme player'larını kapat
+            for (MediaPlayer player : galleryVideoPlayers) {
+                try {
+                    player.stop();
+                    player.dispose();
+                } catch (Exception ignored) {
+                }
+            }
+
+            galleryVideoPlayers.clear();
 
             List<Path> files;
 
@@ -446,6 +459,7 @@ public class GalleryController {
 
             MediaPlayer mediaPlayer =
                     new MediaPlayer(media);
+            galleryVideoPlayers.add(mediaPlayer);
 
             MediaView mediaView =
                     new MediaView(mediaPlayer);
@@ -763,7 +777,6 @@ public class GalleryController {
                         Alert.AlertType.CONFIRMATION
                 );
 
-
         alert.setTitle(
                 "Dosyaları Sil"
         );
@@ -774,7 +787,8 @@ public class GalleryController {
 
         alert.setContentText(
                 selectedFiles.size() +
-                        " öğeyi silmek istediğinize emin misiniz?"
+                        " öğeyi silmek istediğinize emin misiniz?\n\n" +
+                        "Bu medya albümlerde de silinecek."
         );
 
 
@@ -788,8 +802,39 @@ public class GalleryController {
             return;
         }
 
+        // =========================================================
+// VİDEO PLAYER'LARINI KAPAT
+// Windows'ta videoların silinebilmesi için
+// dosyaları kullanan MediaPlayer'lar kapatılmalı.
+// =========================================================
+
+
+        for (MediaPlayer player : galleryVideoPlayers) {
+
+            try {
+                player.stop();
+                player.dispose();
+            } catch (Exception ignored) {
+            }
+        }
+
+        galleryVideoPlayers.clear();
+
+
+        // =========================================================
+        // SEÇİLEN DOSYALARI SİL
+        // =========================================================
 
         for (Path file : selectedFiles) {
+
+            String fileName =
+                    file.getFileName()
+                            .toString();
+
+
+            // -----------------------------------------------------
+            // 1. GALLERY'DEKİ ORİJİNAL DOSYAYI SİL
+            // -----------------------------------------------------
 
             try {
 
@@ -798,15 +843,116 @@ public class GalleryController {
             } catch (IOException e) {
 
                 e.printStackTrace();
+
+                showMessage(
+                        "\"" +
+                                fileName +
+                                "\" silinemedi."
+                );
+
+                continue;
             }
+
+
+            // -----------------------------------------------------
+            // 2. ALBÜMLERDEKİ AYNI DOSYAYI SİL
+            // -----------------------------------------------------
+
+            deleteFromAlbums(fileName);
         }
 
 
+        // =========================================================
+        // SEÇİMİ TEMİZLE
+        // =========================================================
+
         selectedFiles.clear();
+
 
         updateSelectionButtons();
 
+
+        // =========================================================
+        // GALERİYİ YENİLE
+        // =========================================================
+
         loadGallery();
+    }
+
+    // =========================================================
+// ALBÜMLERDEN MEDYAYI SİL
+// =========================================================
+
+    private void deleteFromAlbums(
+            String fileName) {
+
+        try {
+
+            Files.createDirectories(
+                    albumsFolder
+            );
+
+
+            List<Path> albums;
+
+            try (var stream =
+                         Files.list(albumsFolder)) {
+
+                albums =
+                        stream
+                                .filter(Files::isDirectory)
+                                .toList();
+            }
+
+
+            // =====================================================
+            // TÜM ALBÜMLERİ GEZ
+            // =====================================================
+
+            for (Path album : albums) {
+
+                Path albumFile =
+                        album.resolve(
+                                fileName
+                        );
+
+
+                if (Files.exists(albumFile)) {
+
+                    try {
+
+                        Files.deleteIfExists(
+                                albumFile
+                        );
+
+
+                        System.out.println(
+                                "Albümden silindi: "
+                                        + album.getFileName()
+                                        + " / "
+                                        + fileName
+                        );
+
+
+                    } catch (IOException e) {
+
+                        System.out.println(
+                                "Albümden silinemedi: "
+                                        + album.getFileName()
+                                        + " / "
+                                        + fileName
+                        );
+
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
     }
 
 

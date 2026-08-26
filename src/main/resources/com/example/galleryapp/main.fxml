@@ -32,7 +32,10 @@
          <Font name="System Bold" size="17.0" />
       </font></Button>
 
-    <Button stylesheets="@../../../css/style.css" text="Media">
+    <Button stylesheets="@../../../css/style.css"
+            text="Media"
+            onAction = "#openMedia">
+
       <font>
          <Font name="System Bold" size="17.0" />
       </font></Button>

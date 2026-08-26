@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
@@ -18,7 +19,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
-
+import java.util.Comparator;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -124,23 +125,35 @@ public class AlbumController {
 
 
     // =========================================================
-    // YENİ ALBÜM OLUŞTUR
+    // GERİ
     // =========================================================
-
-
 
     @FXML
     private void goBack(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader (getClass().getResource("/com/example/galleryapp/main.fxml"));
 
-        Scene scene = new Scene(loader.load());
+        FXMLLoader loader =
+                new FXMLLoader(
+                        getClass().getResource(
+                                "/com/example/galleryapp/main.fxml"
+                        )
+                );
 
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene =
+                new Scene(loader.load());
+
+        Stage stage =
+                (Stage)
+                        ((Node) event.getSource())
+                                .getScene()
+                                .getWindow();
 
         stage.setScene(scene);
-
-
     }
+
+
+    // =========================================================
+    // YENİ ALBÜM OLUŞTUR
+    // =========================================================
 
     @FXML
     public void createAlbum() {
@@ -281,7 +294,6 @@ public class AlbumController {
 
             } else {
 
-                // BOŞ ALAN
                 Label emptyCell =
                         new Label("＋");
 
@@ -343,6 +355,43 @@ public class AlbumController {
         );
 
 
+        // =====================================================
+        // ALBÜM SİL BUTONU
+        // =====================================================
+
+        Button deleteButton =
+                new Button("Albümü Sil");
+
+
+        deleteButton.setPrefWidth(
+                214
+        );
+
+
+        deleteButton.setStyle(
+                "-fx-background-color: #3A3A3A;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-font-size: 13px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-background-radius: 10;" +
+                        "-fx-border-radius: 10;" +
+                        "-fx-border-color: #555555;" +
+                        "-fx-cursor: hand;"
+        );
+
+
+        // -----------------------------------------------------
+        // ALBÜM SİLME İŞLEMİ
+        // -----------------------------------------------------
+
+        deleteButton.setOnAction(event -> {
+
+            event.consume();
+
+            deleteAlbum(album);
+        });
+
+
         // -----------------------------------------------------
         // ALBÜM KARTI
         // -----------------------------------------------------
@@ -352,7 +401,8 @@ public class AlbumController {
                         8,
                         preview,
                         nameLabel,
-                        dateLabel
+                        dateLabel,
+                        deleteButton
                 );
 
 
@@ -393,6 +443,98 @@ public class AlbumController {
 
         albumPane.getChildren()
                 .add(card);
+    }
+
+
+    // =========================================================
+    // ALBÜMÜ SİL
+    // =========================================================
+
+    // =========================================================
+// ALBÜMÜ SİL
+// =========================================================
+
+    private void deleteAlbum(Path album) {
+
+        Alert alert =
+                new Alert(
+                        Alert.AlertType.CONFIRMATION
+                );
+
+        alert.setTitle(
+                "Albümü Sil"
+        );
+
+        alert.setHeaderText(
+                "\"" +
+                        album.getFileName().toString() +
+                        "\" albümü silinsin mi?"
+        );
+
+        alert.setContentText(
+                "Albümdeki fotoğraf ve videolar silinecek.\n" +
+                        "Gallery'deki orijinal medyalar silinmeyecek."
+        );
+
+        Optional<ButtonType> result =
+                alert.showAndWait();
+
+        if (result.isEmpty()
+                || result.get() != ButtonType.OK) {
+
+            return;
+        }
+
+
+        try {
+
+            // =====================================================
+            // ALBÜMÜN İÇİNDEKİ TÜM DOSYA VE KLASÖRLERİ SİL
+            // =====================================================
+
+            if (Files.exists(album)) {
+
+                try (var stream = Files.walk(album)) {
+
+                    List<Path> paths =
+                            stream
+                                    .sorted(
+                                            Comparator.reverseOrder()
+                                    )
+                                    .toList();
+
+                    for (Path path : paths) {
+
+                        Files.deleteIfExists(path);
+                    }
+                }
+            }
+
+
+            // =====================================================
+            // LİSTEYİ YENİLE
+            // =====================================================
+
+            loadAlbums();
+
+
+            showMessage(
+                    "\"" +
+                            album.getFileName().toString() +
+                            "\" albümü silindi."
+            );
+
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+            showMessage(
+                    "Albüm silinirken bir hata oluştu.\n\n" +
+                            "Hata: " +
+                            e.getMessage()
+            );
+        }
     }
 
 
@@ -474,9 +616,6 @@ public class AlbumController {
 
             // VİDEO
 
-            // Şimdilik videolarda küçük
-            // video simgesi gösteriyoruz.
-
             if (isVideo(name)) {
 
                 return null;
@@ -501,7 +640,10 @@ public class AlbumController {
 
         try {
 
-            System.out.println("ALBÜME TIKLANDI: " + album);
+            System.out.println(
+                    "ALBÜME TIKLANDI: " + album
+            );
+
 
             FXMLLoader loader =
                     new FXMLLoader(
@@ -509,6 +651,7 @@ public class AlbumController {
                                     "/com/example/galleryapp/album-media.fxml"
                             )
                     );
+
 
             if (loader.getLocation() == null) {
 
@@ -523,11 +666,16 @@ public class AlbumController {
                 return;
             }
 
+
             Scene scene =
-                    new Scene(loader.load());
+                    new Scene(
+                            loader.load()
+                    );
+
 
             AlbumMediaController controller =
                     loader.getController();
+
 
             if (controller == null) {
 
@@ -542,19 +690,28 @@ public class AlbumController {
                 return;
             }
 
-            controller.setAlbum(album);
+
+            controller.setAlbum(
+                    album
+            );
+
 
             Stage stage =
-                    (Stage) albumPane
-                            .getScene()
-                            .getWindow();
+                    (Stage)
+                            albumPane
+                                    .getScene()
+                                    .getWindow();
+
 
             stage.setScene(scene);
+
             stage.show();
+
 
         } catch (Exception e) {
 
             e.printStackTrace();
+
 
             showMessage(
                     "Albüm açılırken hata oluştu:\n"
@@ -610,17 +767,21 @@ public class AlbumController {
                         Alert.AlertType.INFORMATION
                 );
 
+
         alert.setTitle(
                 "Bilgi"
         );
+
 
         alert.setHeaderText(
                 null
         );
 
+
         alert.setContentText(
                 message
         );
+
 
         alert.showAndWait();
     }

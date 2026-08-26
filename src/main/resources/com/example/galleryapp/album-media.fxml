@@ -48,20 +48,26 @@
                 <Button text="← Geri"
                         onAction="#goBack"
                         prefHeight="35"
-                        style="-fx-background-color: #3A3A3A;
-                               -fx-text-fill: white;
-                               -fx-font-size: 14px;
-                               -fx-background-radius: 10px;
-                               -fx-padding: 8px 18px;"/>
+                        style="
+                -fx-background-color: #555555;
+                -fx-text-fill: white;
+                -fx-background-radius: 8;
+                -fx-border-radius: 8;
+                -fx-font-size: 14px;
+                -fx-font-weight: bold;
+            "/>
 
                 <Button text="+ Ekle"
                         onAction="#addMedia"
                         prefHeight="35"
-                        style="-fx-background-color: #3A3A3A;
-                               -fx-text-fill: white;
-                               -fx-font-size: 14px;
-                               -fx-background-radius: 10px;
-                               -fx-padding: 8px 18px;"/>
+                        style="
+                -fx-background-color: #555555;
+                -fx-text-fill: white;
+                -fx-background-radius: 8;
+                -fx-border-radius: 8;
+                -fx-font-size: 14px;
+                -fx-font-weight: bold;
+            "/>
 
             </HBox>
 

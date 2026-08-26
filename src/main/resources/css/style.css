@@ -16,3 +16,63 @@
     -fx-scale-x: 1.03;
     -fx-scale-y: 1.03;
 }
+
+/* =========================
+   MEDIA SAYFASI
+   ========================= */
+
+.media-button {
+    -fx-background-color: #5A5A5A;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+
+    -fx-padding: 10px 18px;
+}
+
+.media-button:hover {
+    -fx-background-color: #6A6A6A;
+}
+
+
+/* =========================
+   MEDIA FİLTRE BUTONLARI
+   ========================= */
+
+.media-filter-button {
+    -fx-background-color: #5A5A5A;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+
+    -fx-padding: 9px 16px;
+}
+
+.media-filter-button:hover {
+    -fx-background-color: #6A6A6A;
+}
+
+
+/* =========================
+   MEDIA YATAY ÇİZGİ
+   ========================= */
+
+.media-separator {
+    -fx-padding: 5px 0 5px 0;
+}
+
+.media-separator .line {
+    -fx-border-color: #EEEEEE;
+    -fx-border-width: 0.5px 0 0 0;
+
+    -fx-background-color: #EEEEEE;
+
+    -fx-border-radius: 10;
+}
+
