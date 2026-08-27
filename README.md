@@ -7,7 +7,7 @@ Gallery App, fotoğraf, video ve medya dosyalarınızı kolayca görüntüleyebi
 👉 [Gallery App v1.1.1'i İndir](https://github.com/Aysegul-hub/GalleryApp/releases/download/v1.1.1/GalleryApp-1.1.1.exe)
 
 - !!! KURULUM SIRASINDA SORUN YAŞAMANIZ HALİNDE GELEN EKRANDA "EK BİLGİ" TAG'İNE BASIP "YİNE DE ÇALIŞTIR" BUTONUNA BASARAK KURUMUNUZU GERÇEKLEŞTİREBİLİRSİNİZ...
-- 
+- Gallery App geliştirme süreci devam etmektedir. Yeni özellikler ve iyileştirmeler sonraki sürümlerdeeklenecektir.
 ## ✨ Özellikler
 
 - 🖼️ Fotoğraf görüntüleme
