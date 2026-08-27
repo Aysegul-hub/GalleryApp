@@ -14,6 +14,9 @@ import java.io.IOException;
 
 public class Main extends Application {
 
+    //Uygulamaya kendini tanıtıyoruz.
+    public static final String APP_VERSION ="1.1.1";
+
     @Override
     public void start(Stage stage) throws IOException {
 
@@ -25,6 +28,8 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.show();
 
+
+        UpdateChecker.checkForUpdate();
     }
 
 }
