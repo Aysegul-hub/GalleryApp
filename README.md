@@ -1,15 +1,37 @@
-# 📸 GalleryApp
+# Gallery App 🖼️
 
-JavaFX kullanılarak geliştirilmiş masaüstü galeri uygulaması.
+Gallery App, fotoğraf, video ve medya dosyalarınızı kolayca görüntüleyebileceğiniz bir masaüstü galeri uygulamasıdır.
+
+## 📥 İndirme
+
+👉 [Gallery App v1.1.1'i İndir](https://github.com/Aysegul-hub/GalleryApp/releases/download/v1.1.1/GalleryApp-1.1.1.exe)
 
 ## ✨ Özellikler
 
-- 🖼️ Galeri görüntüleme
-- 📁 Albüm oluşturma
-- 🎵 Albüm medya yönetimi
-- 🎨 JavaFX arayüzü
-- !!! Kurarken sorun yaşamanız durumunda "EK Bilgi" tag'ine tıklayıp "Yinede Çalıştır" diyebilirsiniz.
+- 🖼️ Fotoğraf görüntüleme
+- 🎥 Video oynatma
+- 📁 Bilgisayardan medya ekleme
+- 🖥️ Windows masaüstü uygulaması
+- 🔄 Güncelleme kontrolü
+- 🎨 Modern ve sade kullanıcı arayüzü
 
-## 🚀 Uygulamayı İndir
+## 🛠️ Kullanılan Teknolojiler
 
-👉 [GalleryApp'i İndir (.exe)](https://github.com/Aysegul-hub/GalleryApp/releases/latest/download/GalleryApp-1.0.exe)
+- ☕ Java 24
+- 🎨 JavaFX
+- 🧩 Scene Builder
+- 🎨 Figma
+- 📦 Maven
+- 🐙 GitHub
+
+## 🚀 Kurulum
+
+👉 Yukarıdaki indirme bağlantısına tıklayın.
+
+📥 `GalleryApp-1.1.1.exe` dosyasını indirin.
+
+🖱️ `.exe` dosyasını çalıştırarak kurulumu tamamlayın.
+
+🎉 Gallery App'i kullanmaya başlayın!
+
+> Java, JavaFX, Maven veya IntelliJ IDEA kurulumu gerekmez.
