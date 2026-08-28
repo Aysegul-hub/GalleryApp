@@ -38,3 +38,76 @@ Gallery App, fotoğraf, video ve medya dosyalarınızı kolayca görüntüleyebi
 🎉 Gallery App'i kullanmaya başlayın!
 
 > Java, JavaFX, Maven veya IntelliJ IDEA kurulumu gerekmez.
+
+=====================================================================================================================
+GalleryApp 🎨
+
+A modern desktop gallery application interface designed with Figma.
+
+📌 Project Overview
+
+GalleryApp is a gallery application concept focused on a clean, modern and user-friendly interface.
+
+The interface was designed in Figma with interactive prototype transitions to demonstrate the application’s user flow.
+
+✨ Features
+
+• 🖼️ Gallery view
+• 📁 Media management
+• ➕ Add Media interface
+• 🏷️ Media title editing concept
+• 🗂️ Album management
+• 🖼️ Album cards with 4-image previews
+• 🔍 Search interface concept
+• 🎞️ Animated page transitions
+• 🌙 Modern dark interface
+
+🎨 Design
+
+The UI was designed in Figma.
+
+Main screens:
+
+• Gallery
+• Media
+• Add Media
+• Albums
+• Album Detail
+
+🔗 Figma Prototype
+
+Prototype: Add your Figma prototype link here.
+
+🖥️ Screenshots
+
+Add screenshots of the main screens here.
+
+🚀 Future Development
+
+The Figma prototype represents the UI/UX design stage of the project.
+
+Planned development:
+
+• Implementing the interface as a functional application
+• Real media selection
+• Multiple media selection
+• Editable media titles
+• Album creation and management
+• Search functionality
+• Notifications
+• Database integration
+
+🛠️ Technologies
+
+• Figma
+• UI/UX Design
+• Interactive Prototyping
+
+👩‍💻 Author
+
+Ayşegül
+
+A personal software development and UI/UX design project.
+
+https://www.figma.com/proto/JmKhn0VRC7OTGD27TPj2Du/GALLERY-APP?node-id=0-1&t=zwP1ObPKUhfrKYCQ-1
+
